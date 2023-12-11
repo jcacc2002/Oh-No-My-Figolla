@@ -19,8 +19,11 @@
 
                 Collider2D col = Physics2D.OverlapPoint(worldClickPosition);
 
-                BaseController controller = col.GetComponent<BaseController>();
-                controller.Click(worldClickPosition);
+                if (col != null)
+                {
+                    BaseController controller = col.GetComponent<BaseController>();
+                    controller.Click(worldClickPosition);
+                }
             }
         }
     }
