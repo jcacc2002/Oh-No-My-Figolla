@@ -10,43 +10,101 @@ namespace Figolla
     {
         public TextMeshProUGUI screenText;
         public int timer;
+        public int timer3;
 
-        private List<string> sentences = new List<string>()
+
+        private List<string> sentences = new List<string>();
+        
+        public Dictionary<string, DataType> instructions = new Dictionary<string, DataType>()
         {
-            "Dial clockwise, 4.",
-            "Switch on.",
-            "Button press 6 times."
+            { "Clockwise {n}", DataType.Integer },
+            { "Anti-clockwise {n}", DataType.Integer },
+            { "Switch {n}", DataType.Boolean },
+            { "Button {n} times", DataType.Integer }
         };
 
-        private string lastInstruction = string.Empty;
+        public string lastInstruction = string.Empty;
+        
 
-            void Start()
+        void Start()
         {
             screenText = GetComponent<TextMeshProUGUI>();
-            screenText.text = "FEED ME!";
-            
+            sentences.AddRange(instructions.Keys);
             StartCoroutine(ChangeTextRoutine());
-            
         }
             
-            private IEnumerator ChangeTextRoutine()
-            {
-                while (true)
-                {
-                    yield return new WaitForSeconds(timer);
-                    int rnd = Random.Range(0, sentences.Count);
-                    string randomSentence = sentences[rnd];
-                    sentences.RemoveAt(rnd);
-                    screenText.text = randomSentence;
-                    
-                    if (lastInstruction != string.Empty)
-                    {
-                        sentences.Add(lastInstruction);
-                    }
-
-                    lastInstruction = randomSentence;
-                }
-            }
+        private int targetIntValue;
+        private int playerIntValue;
+        private bool targetBoolValue;
+        private bool playerBoolValue;
         
+        private IEnumerator ChangeTextRoutine()
+        {
+            screenText.text = "FEED ME!";
+            yield return new WaitForSeconds(timer);
+            
+
+            while (true)
+            {
+                int rnd = Random.Range(0, sentences.Count);
+                string randomSentence = sentences[rnd];
+                sentences.RemoveAt(rnd);
+                
+                // check what data type needs to be used.
+                DataType type = instructions[randomSentence];
+
+                switch (type)
+                {
+                    case DataType.Integer:
+                        targetIntValue = Random.Range(1, 11);
+                        playerIntValue = 0;
+                        screenText.text = randomSentence.Replace("{n}", targetIntValue.ToString());;
+                        break;
+                    case DataType.Boolean:
+                        targetBoolValue = Random.Range(0, 2) == 1;
+                        playerIntValue = 0;
+                        screenText.text = randomSentence.Replace("{n}", targetBoolValue ? "on" : "off");;
+                        break;
+                }
+                
+                // reset the player's current value
+                
+                if (lastInstruction != string.Empty)
+                {
+                    sentences.Add(lastInstruction);
+                }
+
+                lastInstruction = randomSentence;
+                Debug.Log(instructions[lastInstruction]);
+                yield return new WaitForSeconds(timer);
+
+                switch (type)
+                {
+                    case DataType.Integer:
+                        screenText.text = playerIntValue == targetIntValue ? "Success" : "Pathetic";
+                        break;
+                    case DataType.Boolean:
+                        screenText.text = playerIntValue == targetIntValue ? "Success" : "Pathetic";
+                        break;
+
+                }
+                yield return new WaitForSeconds(timer3);
+                
+            }
+        }
+
+        public void AddValue(int value)
+        {
+            playerIntValue += value;
+          //  Debug.Log(playerIntValue);
+        }
+        
+        
+    }
+
+    public enum DataType
+    {
+        Integer,
+        Boolean
     }
 }
