@@ -157,6 +157,7 @@ MonoBehaviour:
   light: {fileID: 1457283244}
   on: {r: 0, g: 1, b: 0.008134127, a: 1}
   off: {r: 1, g: 0, b: 0, a: 1}
+  textController: {fileID: 1677308709}
 --- !u!58 &23399280
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -253,7 +254,7 @@ Transform:
   m_GameObject: {fileID: 23399278}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.5, y: -2, z: 0}
+  m_LocalPosition: {x: 4.5, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -340,7 +341,7 @@ Transform:
   m_GameObject: {fileID: 182726608}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.5, y: -2, z: 0}
+  m_LocalPosition: {x: -4.5, y: 1, z: 0}
   m_LocalScale: {x: 2.1387095, y: 2.1387095, z: 2.1387095}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -520,7 +521,7 @@ Transform:
   m_GameObject: {fileID: 227911674}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

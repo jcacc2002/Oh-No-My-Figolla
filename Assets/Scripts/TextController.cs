@@ -13,6 +13,7 @@ namespace Figolla
         public int timer3;
 
 
+
         private List<string> sentences = new List<string>();
         
         public Dictionary<string, DataType> instructions = new Dictionary<string, DataType>()
@@ -84,7 +85,7 @@ namespace Figolla
                         screenText.text = playerIntValue == targetIntValue ? "Success" : "Pathetic";
                         break;
                     case DataType.Boolean:
-                        screenText.text = playerIntValue == targetIntValue ? "Success" : "Pathetic";
+                        screenText.text = playerBoolValue == targetBoolValue ? "Success" : "Pathetic";
                         break;
 
                 }
@@ -97,6 +98,12 @@ namespace Figolla
         {
             playerIntValue += value;
           //  Debug.Log(playerIntValue);
+        }
+        
+        public bool UpdateSwitchStateText(bool isOn)
+        {
+            playerBoolValue = isOn;
+            return isOn;
         }
         
         
