@@ -10,7 +10,7 @@ namespace Figolla
         [SerializeField] private Color on;
         [SerializeField] private Color off;
         private bool toggle = false;
-        public TextController textController; // Reference to the TextController
+        public TextController textController; 
         public override void Click(Vector2 position)
         {
             toggle = !toggle;

@@ -1,11 +1,17 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Figolla;
 
 public class DialController : BaseController
 {
     public Transform dialTransform;
     public float rotationSpeed = 45f;
+    
+    public TextController textController;
+    
+    private int rotationCount = 0;
+    private bool isClockwise = true;
 
     private void Update()
     {
@@ -21,12 +27,29 @@ public class DialController : BaseController
         if (position.x > transform.position.x)
         {
             RotateDial(-rotationSpeed);
+            isClockwise = true;
         }
 
         else
         {
             RotateDial(rotationSpeed);
+            isClockwise = false;
         }
+        rotationCount++;
+        UpdateTextController();
+    }
+    
+    private void UpdateTextController()
+    {
+        if (textController != null)
+        {
+            textController.UpdateDialValue(rotationCount, isClockwise);
+        }
+    }
+    
+    public void ResetRotations()
+    {
+        rotationCount = 0;
     }
 
     private void RotateDial(float angle)

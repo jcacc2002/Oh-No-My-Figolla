@@ -91,6 +91,7 @@ namespace Figolla
                 }
                 yield return new WaitForSeconds(timer3);
                 
+                DialReset();
             }
         }
 
@@ -104,6 +105,29 @@ namespace Figolla
         {
             playerBoolValue = isOn;
             return isOn;
+        }
+        
+        public void UpdateDialValue(int rotationCount, bool isClockwise)
+        {
+            
+            if (lastInstruction.Contains("Clockwise") && isClockwise)
+            {
+                playerIntValue = rotationCount;
+            }
+            else if (lastInstruction.Contains("Anti-clockwise") && !isClockwise)
+            {
+                playerIntValue = rotationCount;
+            }
+        }
+        
+        private void DialReset()
+        {
+           
+            DialController dialController = FindObjectOfType<DialController>();
+            if (dialController != null)
+            {
+                dialController.ResetRotations();
+            }
         }
         
         
