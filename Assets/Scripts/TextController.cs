@@ -2,15 +2,36 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System.IO;
+using UnityEngine.SceneManagement;
+
 using UnityEngine.UI;
 
 namespace Figolla
 {
     public class TextController : MonoBehaviour
     {
-        public TextMeshProUGUI screenText;
-        public int timer;
-        public int timer3;
+        
+        private int score = 0; 
+        private static string highScoreFilePath;
+        
+        
+        private void Awake()
+        {
+            highScoreFilePath = Path.Combine(Application.persistentDataPath, "highscore.txt");
+        }
+        
+        private void IncreaseScore()
+        {
+            score++;
+            
+        }
+        
+        private TextMeshProUGUI screenText;
+        private int timer = 4;
+        private int timer3 = 3;
+        public AudioSource successSound;
+        public AudioSource patheticSound;
 
 
 
@@ -24,7 +45,7 @@ namespace Figolla
             { "Button {n} times", DataType.Integer }
         };
 
-        public string lastInstruction = string.Empty;
+        private string lastInstruction = string.Empty;
         
 
         void Start()
@@ -38,6 +59,7 @@ namespace Figolla
         private int playerIntValue;
         private bool targetBoolValue;
         private bool playerBoolValue;
+
         
         private IEnumerator ChangeTextRoutine()
         {
@@ -76,20 +98,57 @@ namespace Figolla
                 }
 
                 lastInstruction = randomSentence;
-                Debug.Log(instructions[lastInstruction]);
+                //Debug.Log(instructions[lastInstruction]);
                 yield return new WaitForSeconds(timer);
+                bool isCorrect = false; // Variable to check if the player's answer is correct
 
                 switch (type)
                 {
                     case DataType.Integer:
-                        screenText.text = playerIntValue == targetIntValue ? "Success" : "Pathetic";
+                        isCorrect = playerIntValue == targetIntValue;
+                        screenText.text = isCorrect ? "Success" : "Pathetic";
                         break;
                     case DataType.Boolean:
-                        screenText.text = playerBoolValue == targetBoolValue ? "Success" : "Pathetic";
+                        isCorrect = playerBoolValue == targetBoolValue;
+                        screenText.text = isCorrect ? "Success" : "Pathetic";
                         break;
 
                 }
+                
+                if (isCorrect)
+                {
+                    IncreaseScore(); // Increase score only if the answer is correct
+                    if (successSound != null)
+                    {
+                        successSound.Play();
+                    }
+                }
+                else
+                {
+                    if (patheticSound != null)
+                    {
+                        patheticSound.Play();
+                    }
+                    SaveScoreAndCompare();
+                }
                 yield return new WaitForSeconds(timer3);
+
+
+
+                if (score == 10)
+                {
+                    timer = 3;
+                }
+                else if (score == 20)
+                {
+                    timer = 2;
+                }
+                else if (score == 40)
+                {
+                    timer = (int)1.5;
+                }
+                
+                //Debug.Log(score);
                 
                 DialReset();
             }
@@ -129,6 +188,37 @@ namespace Figolla
                 dialController.ResetRotations();
             }
         }
+        private int LoadHighScore()
+        {
+            if (File.Exists(highScoreFilePath))
+            {
+                string content = File.ReadAllText(highScoreFilePath);
+                if (int.TryParse(content, out int highScore))
+                {
+                    return highScore;
+                }
+            }
+            return 0; // Default to 0 if no high score is found or if there's an issue reading the file
+        }
+        
+        public void SaveScoreAndCompare()
+        {
+            int highScore = LoadHighScore();
+            Debug.Log($"Current Score: {score}, High Score: {highScore}");
+            if (score > highScore)
+            {
+                File.WriteAllText(highScoreFilePath, score.ToString());
+                Debug.Log($"New high score saved: {score}");
+                SceneManager.LoadScene("HighScore");
+
+            }
+            else
+            {
+                SceneManager.LoadScene("NotHighScore");
+
+            }
+        }
+        
         
         
     }

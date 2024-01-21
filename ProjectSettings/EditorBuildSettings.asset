@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Oven.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/StartScreen.unity
+    guid: 6c03a0e267a102d4f9ff474b6fe1c5f9
+  - enabled: 1
+    path: Assets/Scenes/HighScore.unity
+    guid: e07ba537b901b0f4995a436aaa16dd13
+  - enabled: 1
+    path: Assets/Scenes/NotHighScore.unity
+    guid: 80ade010063d64746a20b4f2d7427d3a
   m_configObjects: {}

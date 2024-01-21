@@ -9,6 +9,8 @@ public class DialController : BaseController
     public float rotationSpeed = 45f;
     
     public TextController textController;
+
+    public AudioSource dialSound;
     
     private int rotationCount = 0;
     private bool isClockwise = true;
@@ -28,15 +30,24 @@ public class DialController : BaseController
         {
             RotateDial(-rotationSpeed);
             isClockwise = true;
+            if (dialSound != null)
+            {
+                dialSound.Play();
+            }
         }
 
         else
         {
             RotateDial(rotationSpeed);
             isClockwise = false;
+            if (dialSound != null)
+            {
+                dialSound.Play();
+            }
         }
         rotationCount++;
         UpdateTextController();
+
     }
     
     private void UpdateTextController()
