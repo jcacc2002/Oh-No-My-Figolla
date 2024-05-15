@@ -1873,6 +1873,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd71a714d1ef4d82a74cf271604acb87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  screenText: {fileID: 1677308710}
   successSound: {fileID: 1677308712}
   patheticSound: {fileID: 1677308713}
 --- !u!114 &1677308710

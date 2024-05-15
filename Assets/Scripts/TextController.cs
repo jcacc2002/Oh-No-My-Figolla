@@ -4,39 +4,37 @@ using TMPro;
 using UnityEngine;
 using System.IO;
 using UnityEngine.SceneManagement;
-
 using UnityEngine.UI;
 
 namespace Figolla
 {
+    /// <summary>
+    /// Manages the text instructions and player interactions.
+    /// </summary>
     public class TextController : MonoBehaviour
     {
-        
+        [SerializeField]
+        private TextMeshProUGUI screenText;
+
+        [SerializeField]
+        private AudioSource successSound;
+
+        [SerializeField]
+        private AudioSource patheticSound;
+
         private int score = 0; 
         private static string highScoreFilePath;
-        
-        
-        private void Awake()
-        {
-            highScoreFilePath = Path.Combine(Application.persistentDataPath, "highscore.txt");
-        }
-        
-        private void IncreaseScore()
-        {
-            score++;
-            
-        }
-        
-        private TextMeshProUGUI screenText;
         private int timer = 4;
         private int timer3 = 3;
-        public AudioSource successSound;
-        public AudioSource patheticSound;
 
-
+        private int targetIntValue;
+        private int playerIntValue;
+        private bool targetBoolValue;
+        private bool playerBoolValue;
 
         private List<string> sentences = new List<string>();
-        
+        private string lastInstruction = string.Empty;
+
         public Dictionary<string, DataType> instructions = new Dictionary<string, DataType>()
         {
             { "Clockwise {n}", DataType.Integer },
@@ -45,27 +43,22 @@ namespace Figolla
             { "Button {n} times", DataType.Integer }
         };
 
-        private string lastInstruction = string.Empty;
-        
+        private void Awake()
+        {
+            highScoreFilePath = Path.Combine(Application.persistentDataPath, "highscore.txt");
+        }
 
-        void Start()
+        private void Start()
         {
             screenText = GetComponent<TextMeshProUGUI>();
             sentences.AddRange(instructions.Keys);
             StartCoroutine(ChangeTextRoutine());
         }
-            
-        private int targetIntValue;
-        private int playerIntValue;
-        private bool targetBoolValue;
-        private bool playerBoolValue;
 
-        
         private IEnumerator ChangeTextRoutine()
         {
             screenText.text = "FEED ME!";
             yield return new WaitForSeconds(timer);
-            
 
             while (true)
             {
@@ -73,7 +66,7 @@ namespace Figolla
                 string randomSentence = sentences[rnd];
                 sentences.RemoveAt(rnd);
                 
-                // check what data type needs to be used.
+                // Check what data type needs to be used.
                 DataType type = instructions[randomSentence];
 
                 switch (type)
@@ -81,94 +74,99 @@ namespace Figolla
                     case DataType.Integer:
                         targetIntValue = Random.Range(1, 11);
                         playerIntValue = 0;
-                        screenText.text = randomSentence.Replace("{n}", targetIntValue.ToString());;
+                        screenText.text = randomSentence.Replace("{n}", targetIntValue.ToString());
                         break;
                     case DataType.Boolean:
                         targetBoolValue = Random.Range(0, 2) == 1;
                         playerIntValue = 0;
-                        screenText.text = randomSentence.Replace("{n}", targetBoolValue ? "on" : "off");;
+                        screenText.text = randomSentence.Replace("{n}", targetBoolValue ? "on" : "off");
                         break;
                 }
-                
-                // reset the player's current value
-                
+
                 if (lastInstruction != string.Empty)
                 {
                     sentences.Add(lastInstruction);
                 }
 
                 lastInstruction = randomSentence;
-                //Debug.Log(instructions[lastInstruction]);
                 yield return new WaitForSeconds(timer);
-                bool isCorrect = false; // Variable to check if the player's answer is correct
 
-                switch (type)
-                {
-                    case DataType.Integer:
-                        isCorrect = playerIntValue == targetIntValue;
-                        screenText.text = isCorrect ? "Success" : "Pathetic";
-                        break;
-                    case DataType.Boolean:
-                        isCorrect = playerBoolValue == targetBoolValue;
-                        screenText.text = isCorrect ? "Success" : "Pathetic";
-                        break;
+                bool isCorrect = CheckPlayerInput(type);
 
-                }
-                
+                screenText.text = isCorrect ? "Success" : "Pathetic";
+
                 if (isCorrect)
                 {
-                    IncreaseScore(); // Increase score only if the answer is correct
-                    if (successSound != null)
-                    {
-                        successSound.Play();
-                    }
+                    IncreaseScore();
+                    PlaySound(successSound);
                 }
                 else
                 {
-                    if (patheticSound != null)
-                    {
-                        patheticSound.Play();
-                    }
+                    PlaySound(patheticSound);
                     SaveScoreAndCompare();
                 }
+
                 yield return new WaitForSeconds(timer3);
-
-
-
-                if (score == 10)
-                {
-                    timer = 3;
-                }
-                else if (score == 20)
-                {
-                    timer = 2;
-                }
-                else if (score == 40)
-                {
-                    timer = (int)1.5;
-                }
-                
-                //Debug.Log(score);
-                
+                AdjustTimerBasedOnScore();
                 DialReset();
+            }
+        }
+
+        private bool CheckPlayerInput(DataType type)
+        {
+            switch (type)
+            {
+                case DataType.Integer:
+                    return playerIntValue == targetIntValue;
+                case DataType.Boolean:
+                    return playerBoolValue == targetBoolValue;
+                default:
+                    return false;
+            }
+        }
+
+        private void AdjustTimerBasedOnScore()
+        {
+            if (score == 10)
+            {
+                timer = 3;
+            }
+            else if (score == 20)
+            {
+                timer = 2;
+            }
+            else if (score == 40)
+            {
+                timer = (int)1.5;
+            }
+        }
+
+        private void IncreaseScore()
+        {
+            score++;
+        }
+
+        private void PlaySound(AudioSource sound)
+        {
+            if (sound != null)
+            {
+                sound.Play();
             }
         }
 
         public void AddValue(int value)
         {
             playerIntValue += value;
-          //  Debug.Log(playerIntValue);
         }
-        
+
         public bool UpdateSwitchStateText(bool isOn)
         {
             playerBoolValue = isOn;
             return isOn;
         }
-        
+
         public void UpdateDialValue(int rotationCount, bool isClockwise)
         {
-            
             if (lastInstruction.Contains("Clockwise") && isClockwise)
             {
                 playerIntValue = rotationCount;
@@ -178,16 +176,16 @@ namespace Figolla
                 playerIntValue = rotationCount;
             }
         }
-        
+
         private void DialReset()
         {
-           
             DialController dialController = FindObjectOfType<DialController>();
             if (dialController != null)
             {
                 dialController.ResetRotations();
             }
         }
+
         private int LoadHighScore()
         {
             if (File.Exists(highScoreFilePath))
@@ -198,9 +196,9 @@ namespace Figolla
                     return highScore;
                 }
             }
-            return 0; // Default to 0 if no high score is found or if there's an issue reading the file
+            return 0;
         }
-        
+
         public void SaveScoreAndCompare()
         {
             int highScore = LoadHighScore();
@@ -210,17 +208,12 @@ namespace Figolla
                 File.WriteAllText(highScoreFilePath, score.ToString());
                 Debug.Log($"New high score saved: {score}");
                 SceneManager.LoadScene("HighScore");
-
             }
             else
             {
                 SceneManager.LoadScene("NotHighScore");
-
             }
         }
-        
-        
-        
     }
 
     public enum DataType

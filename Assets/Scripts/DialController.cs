@@ -5,13 +5,30 @@ using Figolla;
 
 public class DialController : BaseController
 {
-    public Transform dialTransform;
-    public float rotationSpeed = 45f;
-    
-    public TextController textController;
+    /// <summary>
+    /// Transform of the dial.
+    /// </summary>
+    [SerializeField]
+    private Transform dialTransform;
 
-    public AudioSource dialSound;
-    
+    /// <summary>
+    /// Speed at which the dial rotates.
+    /// </summary>
+    [SerializeField]
+    private float rotationSpeed = 45f;
+
+    /// <summary>
+    /// Reference to the TextController.
+    /// </summary>
+    [SerializeField]
+    private TextController textController;
+
+    /// <summary>
+    /// Audio source to play when the dial is rotated.
+    /// </summary>
+    [SerializeField]
+    private AudioSource dialSound;
+
     private int rotationCount = 0;
     private bool isClockwise = true;
 
@@ -30,34 +47,34 @@ public class DialController : BaseController
         {
             RotateDial(-rotationSpeed);
             isClockwise = true;
-            if (dialSound != null)
-            {
-                dialSound.Play();
-            }
         }
-
         else
         {
             RotateDial(rotationSpeed);
             isClockwise = false;
-            if (dialSound != null)
-            {
-                dialSound.Play();
-            }
         }
+
+        if (dialSound != null)
+        {
+            dialSound.Play();
+        }
+
         rotationCount++;
         UpdateTextController();
-
     }
-    
+
     private void UpdateTextController()
     {
         if (textController != null)
         {
             textController.UpdateDialValue(rotationCount, isClockwise);
         }
+        else
+        {
+            Debug.LogWarning("TextController not assigned!");
+        }
     }
-    
+
     public void ResetRotations()
     {
         rotationCount = 0;
@@ -65,6 +82,9 @@ public class DialController : BaseController
 
     private void RotateDial(float angle)
     {
-        dialTransform.Rotate(Vector3.forward * angle);
+        if (dialTransform != null)
+        {
+            dialTransform.Rotate(Vector3.forward * angle);
+        }
     }
 }
